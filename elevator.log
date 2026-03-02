@@ -1,0 +1,29 @@
+2026-03-02 21:35:35,596 - ElevatorSystem - INFO - Created default building: Main Building
+2026-03-02 21:35:35,987 - ElevatorSystem - INFO - Created default building: Main Building
+2026-03-02 21:37:31,306 - ElevatorSystem - INFO - Created default building: Main Building
+2026-03-02 21:37:31,769 - ElevatorSystem - INFO - Created default building: Main Building
+2026-03-02 21:49:52,851 - ElevatorSystem - INFO - Created default building: Main Building
+2026-03-02 21:50:17,440 - ElevatorSystem - INFO - Created default building: Main Building
+2026-03-02 21:51:02,734 - ElevatorSystem - INFO - Created default building: Main Building
+2026-03-02 21:51:40,832 - ElevatorSystem - INFO - Building: Main Building | Request: 7836bf1d | Action: created | Floor: 7 -> 1 | Status: assigned
+2026-03-02 21:53:52,092 - ElevatorSystem - INFO - Building: Main Building | Request: 657fe82d | Action: created | Floor: 2 -> 3 | Status: assigned
+2026-03-02 21:53:57,783 - ElevatorSystem - INFO - Building: Main Building | Elevator Elevator 1 reset
+2026-03-02 21:53:58,896 - ElevatorSystem - INFO - Building: Main Building | Elevator Elevator 1 reset
+2026-03-02 21:54:00,338 - ElevatorSystem - INFO - Building: Main Building | Elevator Elevator 2 reset
+2026-03-02 21:54:54,333 - ElevatorSystem - CRITICAL - Building: Main Building | Elevator: Elevator 2 | EMERGENCY: Manual emergency from dashboard
+2026-03-02 21:54:58,369 - ElevatorSystem - CRITICAL - Building: Main Building | Elevator: Elevator 1 | EMERGENCY: Manual emergency from dashboard
+2026-03-02 22:04:59,996 - ElevatorSystem - INFO - Building: Main Building | Request: 59145480 | Action: created | Floor: 6 -> 1 | Status: pending
+2026-03-02 22:05:19,563 - ElevatorSystem - CRITICAL - Building: Main Building | Elevator: Elevator 2 | EMERGENCY: Manual emergency from dashboard
+2026-03-02 22:12:42,270 - ElevatorSystem - INFO - Created default building: Main Building
+2026-03-02 22:12:42,644 - ElevatorSystem - INFO - Created default building: Main Building
+2026-03-02 22:15:56,967 - ElevatorSystem - INFO - Building: Main Building | Request: b0901653 | Action: created | Floor: 2 -> 7 | Status: assigned
+2026-03-02 22:17:19,271 - ElevatorSystem - INFO - Created default building: Main Building
+2026-03-02 22:18:04,957 - ElevatorSystem - INFO - Created default building: Main Building
+2026-03-02 22:18:52,725 - ElevatorSystem - INFO - Building: Main Building | Request: ed91c0f6 | Action: created | Floor: 2 -> 8 | Status: assigned
+2026-03-02 22:19:02,665 - ElevatorSystem - CRITICAL - Building: Main Building | Elevator: Elevator 1 | EMERGENCY: Emergency from dashboard
+2026-03-02 22:19:02,717 - ElevatorSystem - CRITICAL - Building: Main Building | Elevator: Elevator 2 | EMERGENCY: Emergency from dashboard
+2026-03-02 22:19:15,363 - ElevatorSystem - CRITICAL - Building: Main Building | Elevator: Elevator 1 | EMERGENCY: Emergency from dashboard
+2026-03-02 22:19:15,385 - ElevatorSystem - CRITICAL - Building: Main Building | Elevator: Elevator 2 | EMERGENCY: Emergency from dashboard
+2026-03-02 22:20:00,040 - ElevatorSystem - INFO - Building: Main Building | Request: 2546312b | Action: created | Floor: 2 -> 8 | Status: pending
+2026-03-02 22:20:20,911 - ElevatorSystem - INFO - Created default building: Main Building
+2026-03-02 22:20:21,290 - ElevatorSystem - INFO - Created default building: Main Building

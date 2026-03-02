@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elevator Control System - Professional Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(90deg, rgba(0,217,255,0.1), rgba(0,255,136,0.1));
+            border: 1px solid rgba(0,217,255,0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 30px;
+        }
+
+        .header-stat {
+            text-align: center;
+        }
+
+        .header-stat .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00d9ff;
+        }
+
+        .header-stat .label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 25px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            color: #00ff88;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .building-visual {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .elevator-shaft {
+            background: linear-gradient(180deg, #1a1a2e 0%, #0f0f23 100%);
+            border: 2px solid rgba(0,217,255,0.3);
+            border-radius: 15px;
+            padding: 15px;
+            position: relative;
+            width: 120px;
+        }
+
+        .shaft-label {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #00d9ff;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .floors-container {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 4px;
+        }
+
+        .floor {
+            height: 35px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .floor-number {
+            position: absolute;
+            left: 8px;
+            font-size: 0.7rem;
+            color: #666;
+        }
+
+        .elevator-car {
+            position: absolute;
+            left: 30px;
+            width: 60px;
+            height: 30px;
+            background: linear-gradient(135deg, #00d9ff, #0099cc);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #000;
+            transition: bottom 0.5s ease-in-out;
+            box-shadow: 0 0 15px rgba(0,217,255,0.5);
+            z-index: 10;
+        }
+
+        .elevator-car.idle {
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            box-shadow: 0 0 15px rgba(0,255,136,0.5);
+        }
+
+        .elevator-car.moving-up {
+            background: linear-gradient(135deg, #00d9ff, #0099cc);
+        }
+
+        .elevator-car.moving-down {
+            background: linear-gradient(135deg, #ff6b6b, #cc4444);
+        }
+
+        .elevator-car.emergency {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .elevator-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+        }
+
+        .elevator-status {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-badge.idle { background: #00ff88; color: #000; }
+        .status-badge.up { background: #00d9ff; color: #000; }
+        .status-badge.down { background: #ff6b6b; color: #000; }
+        .status-badge.emergency { background: #ff0000; color: #fff; }
+        .status-badge.doors { background: #ffd93d; color: #000; }
+
+        .control-section {
+            margin-bottom: 25px;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 12px;
+            color: #888;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .floor-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .floor-btn {
+            padding: 12px;
+            border: 2px solid rgba(0,217,255,0.3);
+            border-radius: 10px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .floor-btn:hover {
+            border-color: #00d9ff;
+            background: rgba(0,217,255,0.1);
+        }
+
+        .floor-btn.selected {
+            background: linear-gradient(135deg, #00d9ff, #0099cc);
+            border-color: #00d9ff;
+            color: #000;
+            box-shadow: 0 0 15px rgba(0,217,255,0.4);
+        }
+
+        .passenger-control {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .passenger-control button {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(0,217,255,0.5);
+            border-radius: 50%;
+            background: rgba(0,0,0,0.3);
+            color: #00d9ff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .passenger-control button:hover {
+            background: rgba(0,217,255,0.2);
+        }
+
+        .passenger-control input {
+            width: 60px;
+            padding: 10px;
+            border: 2px solid rgba(0,217,255,0.3);
+            border-radius: 10px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .request-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .request-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,217,255,0.4);
+        }
+
+        .request-btn:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .request-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .request-item {
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #00d9ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .request-item.completed {
+            border-left-color: #00ff88;
+            opacity: 0.6;
+        }
+
+        .request-info {
+            flex: 1;
+        }
+
+        .request-route {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .request-meta {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .request-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .request-status.pending { background: #ffd93d; color: #000; }
+        .request-status.assigned { background: #00d9ff; color: #000; }
+        .request-status.completed { background: #00ff88; color: #000; }
+
+        .emergency-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(90deg, #ff4757, #ff6b6b);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .emergency-btn:hover {
+            background: linear-gradient(90deg, #ff6b6b, #ff4757);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0,217,255,0.3);
+            border-radius: 10px;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .loading::after {
+            content: '';
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(0,217,255,0.3);
+            border-top-color: #00d9ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛗 Professional Elevator Control System</h1>
+            <div class="header-stats">
+                <div class="header-stat">
+                    <div class="value" id="statRequests">0</div>
+                    <div class="label">Total Requests</div>
+                </div>
+                <div class="header-stat">
+                    <div class="value" id="statCompleted">0</div>
+                    <div class="label">Completed</div>
+                </div>
+                <div class="header-stat">
+                    <div class="value" id="statUptime">0:00</div>
+                    <div class="label">Uptime</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">🏢 Building Elevators</div>
+                    <div style="color: #888; font-size: 0.9rem;">Real-time Status</div>
+                </div>
+                <div class="building-visual" id="elevatorsContainer">
+                    <div class="loading">Loading elevators...</div>
+                </div>
+            </div>
+
+            <div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">🎯 Make Request</div>
+                    </div>
+
+                    <div class="control-section">
+                        <label class="control-label">Current Floor</label>
+                        <div class="floor-grid" id="fromFloors"></div>
+                    </div>
+
+                    <div class="control-section">
+                        <label class="control-label">Destination Floor</label>
+                        <div class="floor-grid" id="toFloors"></div>
+                    </div>
+
+                    <div class="passenger-control">
+                        <label class="control-label" style="margin: 0;">Passengers</label>
+                        <button onclick="adjustPassengers(-1)">−</button>
+                        <input type="number" id="passengerCount" value="1" min="1" max="8" readonly>
+                        <button onclick="adjustPassengers(1)">+</button>
+                    </div>
+
+                    <button class="request-btn" id="requestBtn" onclick="makeRequest()">
+                        🚀 Call Elevator
+                    </button>
+
+                    <button class="emergency-btn" onclick="triggerAllEmergency()">
+                        🛑 Emergency Stop All
+                    </button>
+                </div>
+
+                <div class="panel" style="margin-top: 25px;">
+                    <div class="panel-header">
+                        <div class="panel-title">📋 Request Log</div>
+                    </div>
+                    <div class="request-list" id="requestList">
+                        <div class="empty-state">No requests yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        let buildingId = null;
+        let selectedFrom = 0;
+        let selectedTo = 1;
+        let elevators = [];
+        let startTime = Date.now();
+        const FLOOR_COUNT = 10;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', init);
+
+        async function init() {
+            await loadBuilding();
+            initFloorSelectors();
+            await loadAllData();
+            setInterval(updateAll, 1500);
+        }
+
+        async function apiCall(endpoint, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    ...options,
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        ...options.headers 
+                    }
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                return null;
+            }
+        }
+
+        async function loadBuilding() {
+            const buildings = await apiCall('/buildings');
+            if (buildings && buildings.length > 0) {
+                buildingId = buildings[0].id;
+            }
+        }
+
+        async function loadAllData() {
+            await Promise.all([
+                loadElevators(),
+                loadStats(),
+                loadRequests()
+            ]);
+        }
+
+        async function updateAll() {
+            await Promise.all([
+                loadElevators(),
+                loadStats(),
+                loadRequests()
+            ]);
+            updateUptime();
+        }
+
+        async function loadElevators() {
+            if (!buildingId) return;
+            const data = await apiCall(`/buildings/${buildingId}/elevators`);
+            if (data && Array.isArray(data)) {
+                elevators = data;
+                renderElevators();
+            }
+        }
+
+        async function loadStats() {
+            const data = await apiCall('/stats');
+            if (data) {
+                document.getElementById('statRequests').textContent = data.total_requests || 0;
+                document.getElementById('statCompleted').textContent = data.completed_requests || 0;
+            }
+        }
+
+        async function loadRequests() {
+            if (!buildingId) return;
+            const data = await apiCall(`/buildings/${buildingId}/requests`);
+            if (data && Array.isArray(data)) {
+                renderRequests(data);
+            }
+        }
+
+        function updateUptime() {
+            const seconds = Math.floor((Date.now() - startTime) / 1000);
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            document.getElementById('statUptime').textContent = 
+                `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function initFloorSelectors() {
+            const fromContainer = document.getElementById('fromFloors');
+            const toContainer = document.getElementById('toFloors');
+            
+            for (let i = 0; i < FLOOR_COUNT; i++) {
+                fromContainer.innerHTML += `
+                    <button class="floor-btn ${i === 0 ? 'selected' : ''}" 
+                        onclick="selectFromFloor(${i})">${i}</button>`;
+                toContainer.innerHTML += `
+                    <button class="floor-btn ${i === 1 ? 'selected' : ''}" 
+                        onclick="selectToFloor(${i})">${i}</button>`;
+            }
+        }
+
+        function selectFromFloor(floor) {
+            selectedFrom = floor;
+            document.querySelectorAll('#fromFloors .floor-btn').forEach((btn, i) => {
+                btn.classList.toggle('selected', i === floor);
+            });
+        }
+
+        function selectToFloor(floor) {
+            selectedTo = floor;
+            document.querySelectorAll('#toFloors .floor-btn').forEach((btn, i) => {
+                btn.classList.toggle('selected', i === floor);
+            });
+        }
+
+        function adjustPassengers(delta) {
+            const input = document.getElementById('passengerCount');
+            let val = parseInt(input.value) + delta;
+            val = Math.max(1, Math.min(8, val));
+            input.value = val;
+        }
+
+        async function makeRequest() {
+            if (!buildingId) return;
+            if (selectedFrom === selectedTo) {
+                alert('Please select different floors');
+                return;
+            }
+
+            const btn = document.getElementById('requestBtn');
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+
+            const result = await apiCall(`/buildings/${buildingId}/requests`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    floor: selectedFrom,
+                    target_floor: selectedTo,
+                    passenger_count: parseInt(document.getElementById('passengerCount').value)
+                })
+            });
+
+            btn.disabled = false;
+            btn.textContent = '🚀 Call Elevator';
+
+            if (result && result.id) {
+                await loadAllData();
+            }
+        }
+
+        async function triggerAllEmergency() {
+            if (!confirm('⚠️ Emergency! Stop all elevators?')) return;
+            if (!buildingId) return;
+
+            for (const elevator of elevators) {
+                await apiCall(`/buildings/${buildingId}/elevators/${elevator.id}/emergency-stop`, {
+                    method: 'POST',
+                    body: JSON.stringify({ reason: 'Emergency from dashboard' })
+                });
+            }
+            await loadElevators();
+        }
+
+        async function resetElevator(elevatorId) {
+            if (!buildingId) return;
+            await apiCall(`/buildings/${buildingId}/elevators/${elevatorId}/reset`, {
+                method: 'POST'
+            });
+            await loadElevators();
+        }
+
+        function renderElevators() {
+            const container = document.getElementById('elevatorsContainer');
+            
+            if (elevators.length === 0) {
+                container.innerHTML = '<div class="empty-state">No elevators available</div>';
+                return;
+            }
+
+            container.innerHTML = elevators.map((elev, idx) => {
+                const stateClass = getStateClass(elev.state, elev.is_in_emergency);
+                const statusText = formatStatus(elev.state);
+                
+                return `
+                <div class="elevator-shaft">
+                    <div class="shaft-label">${elev.name}</div>
+                    <div class="floors-container">
+                        ${Array.from({length: FLOOR_COUNT}, (_, i) => `
+                            <div class="floor">
+                                <span class="floor-number">${i}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="elevator-car ${stateClass}" 
+                        style="bottom: ${elev.current_floor * 39 + 5}px">
+                        ${elev.current_floor}
+                    </div>
+                    <div class="elevator-info">
+                        <div class="elevator-status">
+                            <span>Load: ${elev.current_load}/${elev.capacity}</span>
+                            <span class="status-badge ${getBadgeClass(elev.state, elev.is_in_emergency)}">${statusText}</span>
+                        </div>
+                        <div class="elevator-status">
+                            <span>Weight: ${elev.current_weight}kg</span>
+                            <span style="color: ${elev.is_in_emergency ? '#ff0000' : '#00ff88'}">
+                                ${elev.is_in_emergency ? '⚠️ EMERGENCY' : '✓ Normal'}
+                            </span>
+                        </div>
+                        ${elev.is_in_emergency ? `
+                        <button onclick="resetElevator('${elev.id}')" 
+                            style="margin-top:10px;width:100%;padding:8px;background:#00ff88;border:none;border-radius:5px;cursor:pointer;font-weight:bold;">
+                            🔄 Reset Elevator
+                        </button>
+                        ` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function getStateClass(state, isEmergency) {
+            if (isEmergency) return 'emergency';
+            if (state === 'idle') return 'idle';
+            if (state.includes('up') || state === 'moving_up') return 'moving-up';
+            if (state.includes('down') || state === 'moving_down') return 'moving-down';
+            return 'idle';
+        }
+
+        function formatStatus(state) {
+            return state.replace(/_/g, ' ').toUpperCase();
+        }
+
+        function getBadgeClass(state, isEmergency) {
+            if (isEmergency) return 'emergency';
+            if (state === 'idle') return 'idle';
+            if (state.includes('up')) return 'up';
+            if (state.includes('down')) return 'down';
+            if (state.includes('door')) return 'doors';
+            return 'idle';
+        }
+
+        function renderRequests(requests) {
+            const container = document.getElementById('requestList');
+            
+            if (requests.length === 0) {
+                container.innerHTML = '<div class="empty-state">No requests yet</div>';
+                return;
+            }
+
+            container.innerHTML = requests.slice(0, 15).map(req => `
+                <div class="request-item ${req.status}">
+                    <div class="request-info">
+                        <div class="request-route">Floor ${req.floor} → Floor ${req.target_floor}</div>
+                        <div class="request-meta">
+                            ${req.passenger_count} passenger(s) • ${new Date(req.created_at).toLocaleTimeString()}
+                        </div>
+                    </div>
+                    <span class="request-status ${req.status}">${req.status}</span>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
